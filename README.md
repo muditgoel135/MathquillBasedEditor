@@ -3,7 +3,7 @@
 > MathQuill is an awesome formula editor. We have put some effort and made WUSIWUG editor on top of that.
 
 ## What is this?
-> This is a javascript library that provides you a simple math editor that you can easily integrate to your webpage.
+> This is a javascript library that provides you a simple math editor that you can easily integrate to your webpage. It supports multi-line, word-processor-style editing — press Enter to add a new line. See [Multi-line editing](#multi-line-editing).
 
 ## Dependencies
 > - [jQuery](https://jquery.com/download/)
@@ -54,11 +54,41 @@ mathEditor.setTemplate('floating-toolbar');
 
 mathEditor.getLatex();
 // It will return letex for input formula.
+// For a multi-line editor, lines are joined with "\\" (the LaTeX newline).
 
 mathEditor.setLatex('\\frac{1}{2}');
 // It will set letex in input area.
-// It accepts any latex string.
+// It accepts any latex string. A "\\"-joined string is split back into lines.
+
+mathEditor.getLines();
+// Returns an array with the latex of each line, e.g. ['x+1', 'y-2'].
+// This is the lossless way to read a multi-line editor.
+
+mathEditor.getValue();
+// Same as getLatex().
+
+mathEditor.getPrintableValue();
+// Returns the latex wrapped for rendering. Single line -> "$$...$$".
+// Multiple lines -> "$$\begin{array}{l} line1 \\ line2 ... \end{array}$$".
 ```
+
+## Multi-line editing
+The editor behaves like a word processor and supports multiple lines:
+
+- Press **Enter** to start a new line. Content to the right of the cursor moves
+  down to the new line (the line is split at the cursor).
+- Navigation is unchanged within a line, and now also crosses between lines:
+  - **Up / Down** move to the line above / below.
+  - **Left** at the start of a line jumps to the end of the previous line;
+    **Right** at the end of a line jumps to the start of the next line.
+  - **Backspace** at the start of a line merges it into the previous line.
+- Lines are shown as one continuous document — there is no border between
+  lines, and the whole editor sits inside a single outer box.
+
+Read and write multi-line content with `getLines()` (an array, recommended),
+or with `getLatex()` / `setLatex()` which join and split lines on `"\\"`. The
+delimiter is exposed as `MathEditor.LINE_SEP` if you need it directly. For a
+single line, all of these return exactly what they did before.
 
 ## Options
 ### styleMe()

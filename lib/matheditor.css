@@ -54,6 +54,34 @@ div[class^="matheditor-wrapper-"] .mq-editable-field.mq-focused {
     box-shadow: none;
 }
 
+/* Multi-line support: a single outer box around all lines, with no visible
+   border or gap between consecutive lines (document-like). */
+.me-container {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.me-line {
+    display: block;
+    width: 100%;
+}
+
+div[class^="matheditor-wrapper-"] .me-line,
+div[class^="matheditor-wrapper-"] .me-line.mq-editable-field,
+div[class^="matheditor-wrapper-"] .me-line.mq-editable-field.mq-focused {
+    border: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    display: block;
+    width: 100%;
+}
+
+div[class^="matheditor-wrapper-"] .me-line .mq-root-block {
+    width: 100%;
+}
+
 div[class^="matheditor-wrapper-"] .op-btn img {
     width: 14pt;
     margin: auto;
@@ -64,8 +92,9 @@ div[class^="matheditor-wrapper-"] .op-btn img {
 
 div[class^="matheditor-wrapper-"] .mq-root-block,
 .mq-math-mode .mq-root-block {
-    white-space: initial;
-    word-wrap: break-word;
+    /* Keep each formula on a single line (MathQuill's default). Line breaks come
+       from pressing Enter; expressions must never wrap mid-formula. */
+    white-space: nowrap;
     box-shadow: none !important;
 }
 
