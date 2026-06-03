@@ -1,6 +1,6 @@
-## Mathquill based WUSIWYG editor
+## MathQuill based WYSIWYG editor
 
-> MathQuill is an awesome formula editor. We have put some effort and made WUSIWUG editor on top of that.
+> MathQuill is an awesome formula editor. We have put some effort and made a WYSIWYG editor on top of that.
 
 ## What is this?
 > This is a javascript library that provides you a simple math editor that you can easily integrate to your webpage. It supports multi-line, word-processor-style editing — press Enter to add a new line. See [Multi-line editing](#multi-line-editing).
@@ -12,7 +12,11 @@
 ## Getting Started
 Download this package and extract files to your project lib folder.
 
-Include required JS and CSS files to your webpage.
+Include the required JS and CSS files on your webpage. Load `config.js`
+(the toolbar/keyboard configuration — see
+[Configuration files](#configuration-files)) **before** `matheditor.js`. No web
+server is required: because the config is loaded via a `<script>` tag rather than
+fetched, the editor works even when `index.html` is opened directly from `file://`.
 ```
 <html>
 <head>
@@ -21,6 +25,7 @@ Include required JS and CSS files to your webpage.
 
 <script src="./path/to/jquery.js"></script>
 <script src="./path/to/mathquill.min.js"></script>
+<script src="./path/to/config.js"></script>
 <script src="./path/to/matheditor.js"></script>
 </head>
 <body>
@@ -72,6 +77,23 @@ mathEditor.getPrintableValue();
 // Multiple lines -> "$$\begin{array}{l} line1 \\ line2 ... \end{array}$$".
 ```
 
+## Methods
+Method | Description
+------ | -----------
+`new MathEditor(id)` | Create an editor in the element with the given `id`.
+`getLatex()` / `getValue()` | Return the content as LaTeX. Multiple lines are joined with `\\` (the LaTeX newline); a single line is returned unchanged.
+`getLines()` | Return an array with the LaTeX of each line, e.g. `['x+1', 'y-2']` — the lossless way to read multi-line content.
+`getPrintableValue()` | Return the LaTeX wrapped for rendering: `"$$...$$"` for one line, `"$$\begin{array}{l} ... \end{array}$$"` for several.
+`setLatex(latex)` | Set the content from a LaTeX string. A `\\`-joined string is split back into lines.
+`addButtons(keys)` | Set the toolbar buttons to the given array of button keys (keys come from `button_meta` in `config.js`).
+`removeButtons(keys)` | Remove the given button keys from the toolbar.
+`styleMe(options)` | Set colors and dimensions — see [Options](#options).
+`setTemplate('floating-toolbar')` | Switch the toolbar to a floating layout.
+`noKeyboard()` | Remove the on-screen (virtual) keyboard.
+
+The line separator used by `getLatex`/`setLatex` is also exposed as the static
+`MathEditor.LINE_SEP` (`"\\"`).
+
 ## Multi-line editing
 The editor behaves like a word processor and supports multiple lines:
 
@@ -89,6 +111,22 @@ Read and write multi-line content with `getLines()` (an array, recommended),
 or with `getLatex()` / `setLatex()` which join and split lines on `"\\"`. The
 delimiter is exposed as `MathEditor.LINE_SEP` if you need it directly. For a
 single line, all of these return exactly what they did before.
+
+## Configuration files
+The toolbar and virtual keyboard are defined in **`lib/config.js`**, which must be
+loaded (via a `<script>` tag) before `matheditor.js`. It declares four globals:
+
+Global | Purpose
+------ | -------
+`button_meta` | Definition of every toolbar button: `latex` (or `cmd` for bracket commands) inserted on click, `icon` rendered as the button face, optional `moveto`/`movefor` (cursor keystrokes applied after insert), and `tab` (which tab it belongs to).
+`ME_DEFAULT_TOOLBAR_BUTTONS` | The ordered list of button keys shown by default.
+`ME_DEFAULT_TOOLBAR_TABS` | The tab names (`tab: 1` maps to the first name, etc.).
+`keyboard_keys` | The on-screen (mobile) keyboard layout: `letters` and `numbers` arrays of keys, each with `value`, `type` (`write` / `keystroke` / `custom`), `display`, `class`, and `new_line`.
+
+Edit `config.js` to add, remove, restyle, or re-order buttons and keys without
+touching `matheditor.js`. A button's `tab` number must have a corresponding entry
+in `ME_DEFAULT_TOOLBAR_TABS`. Because the config is loaded as a script (not fetched),
+the editor works from `file://` with no web server.
 
 ## Options
 ### styleMe()
