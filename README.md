@@ -9,6 +9,11 @@
 > - [jQuery](https://jquery.com/download/)
 - [MathQuill](https://github.com/mathquill/mathquill)
 
+> ⚠️ **`lib/mathquill.min.js` is a customized build.** Its bracket `reflow()` has
+> been patched so delimiters auto-size to their content (see
+> [Tall expressions & auto-sizing brackets](#tall-expressions--auto-sizing-brackets)).
+> Do **not** replace it with a stock MathQuill download, or that behavior reverts.
+
 ## Getting Started
 Download this package and extract files to your project lib folder.
 
@@ -111,6 +116,25 @@ Read and write multi-line content with `getLines()` (an array, recommended),
 or with `getLatex()` / `setLatex()` which join and split lines on `"\\"`. The
 delimiter is exposed as `MathEditor.LINE_SEP` if you need it directly. For a
 single line, all of these return exactly what they did before.
+
+## Tall expressions & auto-sizing brackets
+The editor is sized to fit whatever you type, so tall formulas stay fully visible:
+
+- A line **grows vertically** to contain tall content (stacked fractions, big
+  operators, large brackets) — there is no inner vertical scrollbar and nothing is
+  clipped. A very long *single-line* formula scrolls **horizontally** instead.
+- Brackets (`(`, `[`, `{`, `⟨`, `|`, …) **auto-size to their content**. When you
+  nest them, each level grows by a fixed amount and stays **vertically centered** on
+  its content, so deeply nested expressions render as an even, symmetric shape
+  rather than ballooning in size.
+
+This is implemented by a patched bracket `reflow()` in the customized
+`lib/mathquill.min.js`: it measures each delimiter and reserves its real height as
+layout, then sizes it to *content height + a constant margin* and centers it. The
+matching CSS lives in `lib/matheditor.css` (the `.mq-root-block` overflow rules —
+`overflow-x: auto` for horizontal scroll, `overflow-y: hidden` so the contained
+content never triggers a stray scrollbar). Keep both in mind if you ever upgrade
+MathQuill.
 
 ## Configuration files
 The toolbar and virtual keyboard are defined in **`lib/config.js`**, which must be

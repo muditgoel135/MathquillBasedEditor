@@ -96,6 +96,19 @@ div[class^="matheditor-wrapper-"] .mq-root-block,
        from pressing Enter; expressions must never wrap mid-formula. */
     white-space: nowrap;
     box-shadow: none !important;
+    /* MathQuill stretches tall delimiters with a CSS `transform: scaleY(...)`,
+       which inflates the glyph visually but reserves no layout height — so a tall
+       bracket used to spill past its box and get either scrolled (the spurious
+       vertical scrollbar) or clipped. That is now fixed at the source: the patched
+       reflow() in mathquill.min.js measures each scaled delimiter and reserves its
+       real height as padding, so the line box always grows to contain the bracket.
+       With nothing left to overflow vertically, `overflow-y: hidden` is a safe
+       no-op (never clips), while `overflow-x: auto` keeps horizontal scrolling for
+       long single-line formulas. They must be set as separate axes: a shorthand
+       `overflow: auto` would let the browser coerce overflow-y back to auto and
+       resurrect the scrollbar. */
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 div[class^="matheditor-wrapper-"] ul[class^="tabs-"] {
